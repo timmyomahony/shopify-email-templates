@@ -1,0 +1,136 @@
+{% capture email_title %}Complete your purchase{% endcapture %}
+{% capture email_body %}{% if item_count > 1 %}These items{% else %}This item{% endif %} will be reserved for you until: <strong>{{ reserve_inventory_until | date: "%B %d, %Y at %I:%M %p %Z" }}</strong>{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!-- To be inlined -->
+  <link rel="stylesheet" type="text/css" href="assets/notifications/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/notifications/inline-styles.css">
+</head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td>
+
+          <!-- @@include('header.liquid') -->
+
+          <table class="row content">
+            <tr>
+              <td class="content__cell">
+                <center>
+                  <table class="container">
+                    <tr>
+                      <td>
+                        <h2>{{ email_title }}</h2>
+                        {% if custom_message != blank %}
+                          <p>{{ custom_message }}</p>
+                        {% elsif reserve_inventory_until %}
+                          <p>{{ email_body }}</p>
+                        {% endif %}
+                        <table class="row actions">
+                          <tr>
+                            <td class="actions__cell">
+                              <table class="button main-action-cell">
+                                <tr>
+                                  <td class="button__cell"><a href="{{ invoice_url }}" class="button__text">Complete your purchase</a></td>
+                                </tr>
+                              </table>
+                              {% if shop.url %}
+                                <table class="link secondary-action-cell">
+                                  <tr>
+                                    <td class="link__cell"><a href="{{ shop.url }}" class="link__text"><span class='or'>or</span> Visit our store</a></td>
+                                  </tr>
+                                </table>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </center>
+              </td>
+            </tr>
+          </table>
+
+          <!-- @@include('order-summary.liquid') -->
+
+          {% if shipping_address or billing_address or shipping_method %}
+            <table class="row section">
+              <tr>
+                <td class="section__cell">
+                  <center>
+                    <table class="container">
+                      <tr>
+                        <td>
+                          <h3>Customer information</h3>
+                        </td>
+                      </tr>
+                    </table>
+                    <table class="container">
+                      <tr>
+                        <td>
+
+                          <table class="row">
+                            <tr>
+                              {% if shipping_address %}
+                                <td class="customer-info__item">
+                                  <h4>Shipping address</h4>
+                                  <p>
+                                    {{ shipping_address.name }}<br/>
+                                    {{ shipping_address.address1 }}
+                                    {% if shipping_address.address2 %}
+                                    <br/>{{ shipping_address.address2 }}
+                                    {% endif %}
+                                    <br/>{{ shipping_address.city }}, {{ shipping_address.province }} {{ shipping_address.zip }}
+                                    <br/>{{ shipping_address.country }}
+                                  </p>
+                                </td>
+                              {% endif %}
+                              {% if billing_address %}
+                                <td class="customer-info__item">
+                                  <h4>Billing address</h4>
+                                  <p>
+                                    {{ billing_address.name }}<br/>
+                                    {{ billing_address.address1 }}
+                                    {% if billing_address.address2 %}
+                                    <br/>{{ billing_address.address2 }}
+                                    {% endif %}
+                                    <br/>{{ billing_address.city }}, {{ billing_address.province }} {{ billing_address.zip }}
+                                    <br/>{{ billing_address.country }}
+                                  </p>
+                                </td>
+                              {% endif %}
+                            </tr>
+                          </table>
+                          {% if shipping_method %}
+                            <table class="row">
+                              <tr>
+                                <td class="customer-info__item customer-info__item--last">
+                                  <h4>Shipping method</h4>
+                                  <p>{{ shipping_method.title }}<br/>{{ shipping_method.price | money }}</p>
+                                </td>
+                              </tr>
+                            </table>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    </table>
+                  </center>
+                </td>
+              </tr>
+            </table>
+          {% endif %}
+
+          <!-- @@include('footer.liquid') -->
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

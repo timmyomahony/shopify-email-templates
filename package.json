@@ -1,0 +1,25 @@
+{
+  "name": "shopify-email-templates",
+  "version": "0.0.1",
+  "description": "Makes it easier to create custom Shopify email templates by allowing you to edit and compile them offline locally before copy/pasting them to Shopifies admin",
+  "main": "index.js",
+  "dependencies": {
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-include-replace": "^5.0.0",
+    "grunt-inline-css": "^0.1.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timmyomahony/shopify-email-templates.git"
+  },
+  "author": "Timmy O'Mahony",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/timmyomahony/shopify-email-templates/issues"
+  },
+  "homepage": "https://github.com/timmyomahony/shopify-email-templates#readme"
+}

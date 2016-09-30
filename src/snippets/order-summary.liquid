@@ -1,0 +1,185 @@
+<table class="row section">
+  <tr>
+    <td class="section__cell">
+      <center>
+        <table class="container">
+          <tr>
+            <td>
+              <h3>
+                {% if order_summary_title %}
+                  {{ order_summary_title }}
+                {% else %}
+                  Order summary
+                {% endif %}
+              </h3>
+            </td>
+          </tr>
+        </table>
+        <table class="container">
+          <tr>
+            <td>
+              <table class="row">
+                {% for line in line_items %}
+                  {% if item_count == 1 %}
+                    {% assign columnWrapperClass = 'order-list__item--single' %}
+                  {% elsif forloop.first == true %}
+                    {% assign columnWrapperClass = 'order-list__item--first' %}
+                  {% elsif forloop.last == true %}
+                    {% assign columnWrapperClass = 'order-list__item--last' %}
+                  {% else %}
+                    {% assign columnWrapperClass = '' %}
+                  {% endif %}
+                  <tr class="order-list__item {{columnWrapperClass}}">
+                    <td class="order-list__item__cell">
+                      <table>
+                        <td>
+                          {% if line.image %}
+                            <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                          {% endif %}
+                        </td>
+                        <td class="order-list__product-description-cell">
+                          {% if line.product.title %}
+                            {% assign line_title = line.product.title %}
+                          {% else %}
+                            {% assign line_title = line.title %}
+                          {% endif %}
+                          <span class="order-list__item-title">{{ line_title }} × {{ line.quantity }}</span><br/>
+                          {% if line.variant.title != 'Default Title' %}
+                            <span class="order-list__item-variant">{{ line.variant.title }}</span>
+                          {% endif %}
+                        </td>
+                          <td class="order-list__price-cell">
+                            {% if line.original_line_price != line.line_price %}
+                              <del class="order-list__item-original-price">{{ line.original_line_price | money }}</del>
+                            {% endif %}
+                            <p class="order-list__item-price">{{ line.line_price | money }}</p>
+                          </td>
+                      </table>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+              <table class="row subtotal-lines">
+                <tr>
+                  <td class="subtotal-spacer"></td>
+                  <td>
+                    <table class="row subtotal-table">
+                      {% if discounts %}
+                        {% capture discount_title %}Discount {% if discounts.first.code %}({{ discounts.first.code }}){% endif %}{% endcapture %}
+                        <tr class="subtotal-line">
+                          <td class="subtotal-line__title">
+                            <p>
+                              <span>{{ discount_title }}</span>
+                            </p>
+                          </td>
+                          <td class="subtotal-line__value">
+                            <strong>{{ discounts_savings | money }}</strong>
+                          </td>
+                        </tr>
+                      {% endif %}
+                      <tr class="subtotal-line">
+                        <td class="subtotal-line__title">
+                          <p>
+                            <span>Subtotal</span>
+                          </p>
+                        </td>
+                        <td class="subtotal-line__value">
+                          <strong>{{ subtotal_price | money }}</strong>
+                        </td>
+                      </tr>
+                      <tr class="subtotal-line">
+                        <td class="subtotal-line__title">
+                          <p>
+                            <span>Shipping</span>
+                          </p>
+                        </td>
+                        <td class="subtotal-line__value">
+                          <strong>{{ shipping_price | money }}</strong>
+                        </td>
+                      </tr>
+                      {% for line in tax_lines %}
+                        <tr class="subtotal-line">
+                          <td class="subtotal-line__title">
+                            <p>
+                              <span>{{ line.title }}</span>
+                            </p>
+                          </td>
+                          <td class="subtotal-line__value">
+                            <strong>{{ line.price | money }}</strong>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                    <table class="row subtotal-table subtotal-table--total">
+                      <tr class="subtotal-line">
+                        <td class="subtotal-line__title">
+                          <p>
+                            <span>Total</span>
+                          </p>
+                        </td>
+                        <td class="subtotal-line__value">
+                          <strong>{{ total_price | money_with_currency }}</strong>
+                        </td>
+                      </tr>
+                    </table>
+                    {% assign transaction_size = 0 %}
+                    {% for transaction in transactions %}
+                      {% unless transaction.kind == "capture" or transaction.kind == "void" %}
+                        {% assign transaction_size = transaction_size | plus: 1 %}
+                      {% endunless %}
+                    {% endfor %}
+                    {% if transaction_size > 1 %}
+                      <table class="row subtotal-table">
+                        <tr><td colspan="2" class="subtotal-table__line"></td></tr>
+                        <tr><td colspan="2" class="subtotal-table__small-space"></td></tr>
+
+                        {% for transaction in transactions %}
+                          {% if (transaction.status == "success") and (transaction.kind == "authorization" or transaction.kind == "sale") %}
+                            {% if transaction.payment_details.credit_card_company %}
+                              {% capture transaction_name %}{{ transaction.payment_details.credit_card_company }} (ending in {{ transaction.payment_details.credit_card_last_four_digits }}){% endcapture %}
+                            {% else %}
+                              {% capture transaction_name %}{{ transaction.gateway | replace: "_", " " | capitalize }}{% endcapture %}
+                            {% endif %}
+                            <tr class="subtotal-line">
+                              <td class="subtotal-line__title">
+                                <p>
+                                  <span>{{transaction_name}}</span>
+                                </p>
+                              </td>
+                              <td class="subtotal-line__value">
+                                <strong>{{ transaction.amount | money }}</strong>
+                              </td>
+                            </tr>
+                          {% endif %}
+                          {% if transaction.kind == 'refund' %}
+                            {% if transaction.payment_details.credit_card_company %}
+                              {% assign refund_method_title = transaction.payment_details.credit_card_company %}
+                            {% else %}
+                              {% assign refund_method_title = transaction.gateway %}
+                            {% endif %}
+                            <tr class="subtotal-line">
+                              <td class="subtotal-line__title">
+                                <p>
+                                  <span>Refund</span>
+                                    <br>
+                                    <small>{{ refund_method_title | capitalize }}</small>
+                                </p>
+                              </td>
+                              <td class="subtotal-line__value">
+                                <strong>- {{ transaction.amount | money }}</strong>
+                              </td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                      </table>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </td>
+  </tr>
+</table>

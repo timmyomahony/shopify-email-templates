@@ -1,0 +1,160 @@
+{% capture email_title %}Thank you for your purchase! {% endcapture %}
+{% capture email_body %}Hi {{ customer.first_name }}, we're getting your order ready to be shipped. We will notify you when it has been sent.{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!-- To be inlined -->
+  <link rel="stylesheet" type="text/css" href="assets/notifications/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/notifications/inline-styles.css">
+</head>
+
+<body>
+  <table class="body">
+    <tr>
+      <td>
+
+        <!-- @@include('header.liquid') -->
+
+        <!-- Message -->
+        <table class="row content">
+          <tr>
+            <td class="content__cell content__cell--quarter">
+              <center>
+                <table class="container">
+                  <tr>
+                    <td>
+                      <h2>{{ email_title }}</h2>
+                      <p>{{ email_body }}</p>
+                      {% if order_status_url %}
+                        <table class="row actions">
+                          <tr>
+                            <td class="actions__cell">
+                              <table class="button main-action-cell">
+                                <tr>
+                                  <td class="button__cell"><a href="{{ order_status_url }}" class="button__text">View your order</a></td>
+                                </tr>
+                              </table>
+                              {% if shop.url %}
+                                <table class="link secondary-action-cell">
+                                  <tr>
+                                    <td class="link__cell"><a href="{{ shop.url }}" class="link__text"><strong><span class='or'>or</span> Visit our store</strong></a></td>
+                                  </tr>
+                                </table>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </table>
+                      {% else %}
+                        {% if shop.url %}
+                          <table class="row actions">
+                            <tr>
+                              <td class="actions__cell">
+                                <table class="button main-action-cell">
+                                  <tr>
+                                    <td class="button__cell"><a href="{{ shop.url }}" class="button__text">Visit our store</a></td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                  </tr>
+                </table>
+              </center>
+            </td>
+          </tr>
+        </table>
+
+        <!-- @@include('order-summary.liquid') -->
+
+        <!-- Customer info -->
+        <table class="row section">
+          <tr>
+            <td class="section__cell section__cell--quarter">
+              <center>
+                <table class="container">
+                  <tr>
+                    <td>
+                      <h3>Customer information</h3>
+                    </td>
+                  </tr>
+                </table>
+                <table class="container">
+                  <tr>
+                    <td>
+                      <table class="row">
+                        <tr>
+                          {% if requires_shipping and shipping_address %}
+                            <td class="customer-info__item">
+                              <h4>Shipping address</h4>
+                              <p>
+                                {{ shipping_address.name }}<br/>
+                                {{ shipping_address.address1 }}
+                                {% if shipping_address.address2 %}
+                                <br/>{{ shipping_address.address2 }}
+                                {% endif %}
+                                <br/>{{ shipping_address.city }}, {{ shipping_address.province }} {{ shipping_address.zip }}
+                                <br/>{{ shipping_address.country }}
+                              </p>
+                            </td>
+                          {% endif %}
+                          {% if billing_address %}
+                            <td class="customer-info__item">
+                              <h4>Billing address</h4>
+                              <p>
+                                {{ billing_address.name }}<br/>
+                                {{ billing_address.address1 }}
+                                {% if billing_address.address2 %}
+                                <br/>{{ billing_address.address2 }}
+                                {% endif %}
+                                <br/>{{ billing_address.city }}, {{ billing_address.province }} {{ billing_address.zip }}
+                                <br/>{{ billing_address.country }}
+                              </p>
+                            </td>
+                          {% endif %}
+                        </tr>
+                      </table>
+                      <table class="row">
+                        <tr>
+                          <td class="customer-info__item">
+                            <h4>Shipping method</h4>
+                            <p>{{ shipping_method.title }}</p>
+                          </td>
+                          <td class="customer-info__item">
+                            <h4>Payment method</h4>
+                            {% for transaction in transactions %}
+                              {% if (transaction.status == "success") and (transaction.kind == "authorization" or transaction.kind == "sale") %}
+                                <p class="customer-info__item-content">
+                                  {% if transaction.payment_details.credit_card_company %}
+                                    {% capture credit_card_url %}notifications/{{ transaction.payment_details.credit_card_company | downcase }}.png{% endcapture %}
+                                    <span>Ending in {{ transaction.payment_details.credit_card_last_four_digits }} — <strong>{{ total_price | money }}</strong></span>
+                                  {% else %}
+                                    {{ transaction.gateway | replace: "_", " " | capitalize }} — <strong>{{ transaction.amount | money }}</strong>
+                                  {% endif %}
+                                </p>
+                              {% endif %}
+                            {% endfor %}
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </center>
+            </td>
+          </tr>
+        </table>
+
+        <!-- @@include('footer.liquid') -->
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% capture email_title %} Your shopping cart is waiting for you {% endcapture %}
+{% capture email_body %}
+{% if billing_address.first_name %}Hi {{ billing_address.first_name }}, w{% else %}
+W{% endif %}e noticed there {% if item_count == 1 %}was an item{% else %}were some items{% endif %} left in your shopping cart.
+If you're ready to complete your order, your cart is waiting for your return.
+{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!-- To be inlined -->
+  <link rel="stylesheet" type="text/css" href="assets/notifications/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/notifications/inline-styles.css">
+</head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td>
+
+          <!-- @@include('header.liquid') -->
+
+          <table class="row content">
+            <tr>
+              <td class="content__cell">
+                <center>
+                  <table class="container">
+                    <tr>
+                      <td>
+                        <h2>{{ email_title }}</h2>
+                        {% if custom_message != blank %}
+                          <p>{{ custom_message }}</p>
+                        {% else %}
+                          <p>{{ email_body }}</p>
+                        {% endif %}
+                        <table class="row actions">
+                          <tr>
+                            <td class="actions__cell">
+                              <table class="button main-action-cell">
+                                <tr>
+                                  <td class="button__cell"><a href="{{ url }}" class="button__text">Complete your purchase</a></td>
+                                </tr>
+                              </table>
+                              {% if shop.url %}
+                                <table class="link secondary-action-cell">
+                                  <tr>
+                                    <td class="link__cell"><a href="{{ shop.url }}" class="link__text"><span class='or'>or</span> Visit our store</a></td>
+                                  </tr>
+                                </table>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </center>
+              </td>
+            </tr>
+          </table>
+          <table class="row section">
+            <tr>
+              <td class="section__cell">
+                <center>
+                  <table class="container">
+                    <tr>
+                      <td>
+                        <h3>Items in your cart</h3>
+                      </td>
+                    </tr>
+                  </table>
+                  <table class="container">
+                    <tr>
+                      <td>
+                        <table class="row">
+                          {% for line in line_items %}
+
+                          {% if item_count == 1 %}
+                            {% assign columnWrapperClass = 'order-list__item--single' %}
+                          {% elsif forloop.first == true %}
+                            {% assign columnWrapperClass = 'order-list__item--first' %}
+                          {% elsif forloop.last == true %}
+                            {% assign columnWrapperClass = 'order-list__item--last' %}
+                          {% else %}
+                            {% assign columnWrapperClass = '' %}
+                          {% endif %}
+                          <tr class="order-list__item {{columnWrapperClass}}">
+                            <td class="order-list__item__cell">
+                              <table>
+                                <td>
+                                  {% if line.image %}
+                                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                                  {% endif %}
+                                </td>
+                                <td class="order-list__product-description-cell">
+                                  {% if line.product.title %}
+                                    {% assign line_title = line.product.title %}
+                                  {% else %}
+                                    {% assign line_title = line.title %}
+                                  {% endif %}
+                                  <span class="order-list__item-title">{{ line_title }} × {{ line.quantity }}</span><br/>
+                                  {% if line.variant.title != 'Default Title' %}
+                                    <span class="order-list__item-variant">{{ line.variant.title }}</span>
+                                  {% endif %}
+                                </td>
+                              </table>
+                            </td>
+                          </tr>{% endfor %}
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </center>
+              </td>
+            </tr>
+          </table>
+
+          <!-- @@include('footer.liquid') -->
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

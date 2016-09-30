@@ -1,0 +1,38 @@
+{% if refund_line_items.size == item_count %}
+  {% capture email_title %}Your order has been refunded {% endcapture %}
+{% elsif refund_line_items.size == 0 %}
+  {% capture email_title %}You have received a refund {% endcapture %}
+{% else %}
+  {% capture email_title %}Some items in your order have been refunded {% endcapture %}
+{% endif %}
+{% capture email_body %}Total amount refunded: <strong>{{ amount | money_with_currency }}</strong>{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!-- To be inlined -->
+  <link rel="stylesheet" type="text/css" href="assets/notifications/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/notifications/inline-styles.css">
+</head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td>
+
+          <!-- @@include('header.liquid') -->
+
+          <!-- @@include('default-content.liquid') -->
+
+          <!-- @@include('order-summary.liquid') -->
+
+          <!-- @@include('footer.liquid') -->
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

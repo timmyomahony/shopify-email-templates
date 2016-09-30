@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!-- To be inlined -->
+  <link rel="stylesheet" type="text/css" href="assets/notifications/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/notifications/inline-styles.css">
+</head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td>
+
+          <!-- @@include('header.liquid') -->
+
+          <table class="row content">
+            <tr>
+              <td class="content__cell">
+                <center>
+                  <table class="container">
+                    <tr>
+                      <td>
+                        <p>{{ custom_message }}</p>
+                      </td>
+                    </tr>
+                  </table>
+                </center>
+              </td>
+            </tr>
+          </table>
+
+          <!-- @@include('footer.liquid') -->
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

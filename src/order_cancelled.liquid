@@ -1,0 +1,52 @@
+{% capture email_title %}Your order has been canceled{% endcapture %}
+{% capture email_body %}
+  Order {{ name }} was canceled
+  {% case cancel_reason %}
+  {% when 'customer' %}
+    at your request
+  {% when 'inventory' %}
+    because we did not have enough stock to fulfill your order
+  {% when 'fraud' %}
+    because we suspect it is fraudulent
+  {% when 'other' %}
+    due to unforeseen circumstances
+  {% endcase %}
+
+  {% if financial_status == 'voided' %}
+    and your payment has been voided
+  {% elsif financial_status == 'refunded' %}
+    and your payment has been refunded
+  {% endif %}
+  .
+{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <!-- To be inlined -->
+  <link rel="stylesheet" type="text/css" href="assets/notifications/style.css">
+  <link rel="stylesheet" type="text/css" href="assets/notifications/inline-styles.css">
+</head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td>
+
+        <!-- @@include('header.liquid') -->
+
+        <!-- @@include('default-content.liquid') -->
+
+        {% assign order_summary_title = "Refunded items" %}
+        <!-- @@include('order-summary.liquid') -->
+
+        <!-- @@include('footer.liquid') -->
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

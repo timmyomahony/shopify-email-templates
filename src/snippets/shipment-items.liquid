@@ -1,0 +1,56 @@
+<table class="row section">
+  <tr>
+    <td class="section__cell">
+      <center>
+        <table class="container">
+          <tr>
+            <td>
+              <h3>Items in this shipment</h3>
+            </td>
+          </tr>
+        </table>
+        <table class="container">
+          <tr>
+            <td>
+              <table class="row">
+                {% for line in fulfillment.fulfillment_line_items %}
+
+                {% if item_count == 1 %}
+                  {% assign columnWrapperClass = 'order-list__item--single' %}
+                {% elsif forloop.first == true %}
+                  {% assign columnWrapperClass = 'order-list__item--first' %}
+                {% elsif forloop.last == true %}
+                  {% assign columnWrapperClass = 'order-list__item--last' %}
+                {% else %}
+                  {% assign columnWrapperClass = '' %}
+                {% endif %}
+                <tr class="order-list__item {{columnWrapperClass}}">
+                  <td class="order-list__item__cell">
+                    <table>
+                      <td>
+                        {% if line.line_item.image %}
+                          <img src="{{ line.line_item | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                        {% endif %}
+                      </td>
+                      <td class="order-list__product-description-cell">
+                        {% if line.line_item.product.title %}
+                          {% assign line_title = line.line_item.product.title %}
+                        {% else %}
+                          {% assign line_title = line.line_item.title %}
+                        {% endif %}
+                        <span class="order-list__item-title">{{ line_title }} × {{ line.line_item.quantity }}</span><br/>
+                        {% if line.line_item.variant.title != 'Default Title' %}
+                          <span class="order-list__item-variant">{{ line.line_item.variant.title }}</span>
+                        {% endif %}
+                      </td>
+                    </table>
+                  </td>
+                </tr>{% endfor %}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </td>
+  </tr>
+</table>
