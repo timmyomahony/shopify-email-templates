@@ -1,8 +1,8 @@
-#Shopify Email Templates
+# Shopify Email Templates
 
 Creating custom email templates can be tedious with Shopify. You have to login to the admin of your store and edit each template repetitively using their editor. This repo tries to make this process a little bit easier. You will still have to manually copy and paste the templates from your local machine to the admin editor, but you can more easily edit the custom email template locally to make this process much quicker.
 
-####Workflow:
+#### Workflow:
 
 1. Run the `grunt` task from the root of the repo
 2. Open up the email template you want to edit in `src/[template-name].liquid`
@@ -12,6 +12,6 @@ Creating custom email templates can be tedious with Shopify. You have to login t
 
 It's not perfect but it's a start ;)
  
-####Notes
+#### Notes
 
 - The reuseable elements of the email templates (such as the header and footer) have been moved to the `assets/snippts` folder. This means you can easily edit these elements once without having to then copy and paste the changes to *every* other template
